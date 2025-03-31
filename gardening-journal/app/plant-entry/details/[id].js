@@ -67,7 +67,7 @@ const handleDeleteEntry = () => {
 if (loading) {
     return (
         <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large" color="green" />
         </View>
     );
 }
@@ -80,102 +80,102 @@ if (!entry) {
     );
 }
 
-// FIXME: format all viewing containers to show plant entry and respective data
 // FIXME: change all styling to match container contents
 return (
     <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
             {entry.image_uri ? (
-            <Image source={{ uri: entry.image_uri }} style={styles.recipeImage} />
+                <Image source={{ uri: entry.image_uri }} style={styles.recipeImage} />
             ) : (
-            <View style={styles.noImageContainer}>
-                <Text style={styles.noImageText}>No Image</Text>
-            </View>
+                <View style={styles.noImageContainer}>
+                    <Text style={styles.noImageText}>No Image Provided</Text>
+                </View>
             )}
 
             <View style={styles.recipeHeader}>
-            <Text style={styles.recipeName}>{recipe.name}</Text>
-            <View style={styles.recipeMetaContainer}>
-                {entry.species ? (
-                <View style={styles.metaItem}>
-                    <Text style={styles.metaLabel}>Species:</Text>
-                    <Text style={styles.metaValue}>{recipe.cuisine_type}</Text>
+                <Text style={styles.recipeName}>{entry.name}</Text>
+                <View style={styles.recipeMetaContainer}>
+                    {entry.species ? (
+                    <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Species:</Text>
+                        <Text style={styles.metaValue}>{recipe.cuisine_type}</Text>
+                    </View>
+                    ) : null}
+                    
+                    {entry.watering_time ? (
+                    <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Watering Time:</Text>
+                        <Text style={styles.metaValue}>{entry.watering_time} mins</Text>
+                    </View>
+                    ) : null}
                 </View>
-                ) : null}
-                
-                {entry.watering_time ? (
-                <View style={styles.metaItem}>
-                    <Text style={styles.metaLabel}>Watering Time:</Text>
-                    <Text style={styles.metaValue}>{entry.watering_time} mins</Text>
-                </View>
-                ) : null}
-            </View>
             </View>
 
             {entry.description ? (
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Description</Text>
-                <Text style={styles.descriptionText}>{entry.description}</Text>
-            </View>
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Description:</Text>
+                    <Text style={styles.descriptionText}>{entry.description}</Text>
+                </View>
             ) : null}
 
             <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Watering Log</Text>
-            {entry.waterLog.length > 0
-                ?  (entry.waterLog
-                    .sort((a, b) => a.watering_id - b.watering_id) // sort by watering_id
-                    .map((watering, index) => (
-                        <View key={index} style={styles.ingredientItem}>
-                            <Text style={styles.ingredientText}>
-                            {watering.date && watering.time
-                                ? `Plant Watered: ${watering.date} - ${watering.time}`
-                                : 'No watering information available'}
-                            {watering.fertilizer 
-                                ? ` - Fertilized? Y`
-                                : ` - Fertilized? N`}
-                            </Text>
-                        </View>
-                    )))
-                :  (<Text style={styles.emptyListText}>No watering log added</Text>)}
+                <Text style={styles.sectionTitle}>Watering Log</Text>
+                {entry.waterLog.length > 0
+                    ?  (entry.waterLog
+                        .sort((a, b) => a.watering_id - b.watering_id) // sort by watering_id
+                        .map((watering, index) => (
+                            <View key={index} style={styles.ingredientItem}>
+                                <Text style={styles.ingredientText}>
+                                {watering.date && watering.time
+                                    ? (`Plant Watered: ${watering.date} - ${watering.time}`
+                                        (watering.fertilizer 
+                                            ? ` - Fertilized? Y`
+                                            : ` - Fertilized? N`))
+                                    : 'No watering information available'}
+                                
+                                </Text>
+                            </View>
+                        )))
+                    :  (<Text style={styles.emptyListText}>No watering log added</Text>)
+                }
             </View>
 
             <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Weather Log</Text>
-            {entry.weatherLog.length > 0 ? (
-                entry.weatherLog
-                .sort((a, b) => a.weather_id - b.weather_id) // sort by weather_id
-                .map((weather, index) => (
-                    <View key={index} style={styles.stepItem}>
-                        <Text style={styles.stepText}>
-                            {weather.date && weather.time
-                                ? `Weather Recorded: ${weather.date} - ${weather.time}`
-                                : 'No weather information available'}
-                            {watering.fertilizer 
-                                ? ` - Fertilized? Y`
-                                : ` - Fertilized? N`}
-                            </Text>
-                        <Text style={styles.stepNumber}>{weather.weather_id}</Text>
-                        <Text style={styles.stepText}>{step.instruction}</Text>
-                    </View>
-                ))
-            ) : (
-                <Text style={styles.emptyListText}>No weather log added</Text>
-            )}
+                <Text style={styles.sectionTitle}>Weather Log</Text>
+                {entry.weatherLog.length > 0
+                    ?  (entry.weatherLog
+                        .sort((a, b) => a.weather_id - b.weather_id) // sort by weather_id
+                        .map((weather, index) => (
+                            <View key={index} style={styles.stepItem}>
+                                <Text style={styles.stepText}>
+                                    {weather.date && weather.time
+                                        ? `Weather Recorded: ${weather.date} - ${weather.time}`
+                                        : 'No weather information available'}
+                                    {weather.inclement_weather 
+                                        ? `**Inclement Weather**`
+                                            (weather.conditions
+                                                ? `\nDescription: ${weather.conditions}`
+                                                : null)
+                                        : `No inclement weather reported`}
+                                </Text>
+                            </View>)))
+                    :  (<Text style={styles.emptyListText}>No weather log added</Text>)
+                }
             </View>
         </ScrollView>
 
         <View style={styles.actionButtonsContainer}>
             <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
-            onPress={handleEditRecipe}
+                style={[styles.actionButton, styles.editButton]}
+                onPress={handleEditEntry}
             >
-            <Text style={styles.actionButtonText}>Edit</Text>
+                <Text style={styles.actionButtonText}>Edit</Text>
             </TouchableOpacity>
             <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={handleDeleteRecipe}
+                style={[styles.actionButton, styles.deleteButton]}
+                onPress={handleDeleteEntry}
             >
-            <Text style={styles.actionButtonText}>Delete</Text>
+                <Text style={styles.actionButtonText}>Delete</Text>
             </TouchableOpacity>
         </View>
     </View>);
