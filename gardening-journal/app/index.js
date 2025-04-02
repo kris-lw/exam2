@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import { getJournal, initDatabase } from './database/db';
 
 export default function HomeScreen() {
-  initDatabase();
   const [journal, setJournal] = useState([]);
   const [filteredJournal, setFilteredJournal] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,6 +14,7 @@ export default function HomeScreen() {
 
   // useEffect - This useEffect is designed to load recipe data when the component first mounts.
   useEffect(() => {
+    initDatabase();
     loadJournal();
   }, []); // The empty array as the second argument means this effect will only run once after the initial render of the component
 

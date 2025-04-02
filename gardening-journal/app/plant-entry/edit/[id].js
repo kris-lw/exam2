@@ -252,7 +252,7 @@ const handleUpdateEntry = async () => {
                     
                     <View style={styles.formField}>
                         <Text style={styles.label}>Receive reminders for watering? (defaults to 'no')</Text>
-                        <TouchableOpacity style={styles.remindButton} onPress={handleEntryChange('remind', !entry.remind)}>
+                        <TouchableOpacity style={styles.remindButton} onPress={() => handleEntryChange('remind', !entry.remind)}>
                             {entry.remind
                                 ? `\u2611 Remind Me` // checked box
                                 : `\u2610 Remind Me` // unchecked box
@@ -309,7 +309,7 @@ const handleUpdateEntry = async () => {
 
                                 <View style={styles.formField}>
                                     <Text style={styles.label}>Used fertilizer? (defaults to 'no') *</Text>
-                                    <TouchableOpacity style={styles.remindButton} onPress={handleWaterLogChange('fertilizer', !watering.fertilizer)}>
+                                    <TouchableOpacity style={styles.remindButton} onPress={() => handleWaterLogChange(index, 'fertilizer', !watering.fertilizer)}>
                                         {watering.fertilizer
                                             ? `\u2611 Fertilizer` // checked box
                                             : `\u2610 Fertilizer` // unchecked box
@@ -373,7 +373,7 @@ const handleUpdateEntry = async () => {
 
                                 <View style={styles.formField}>
                                     <Text style={styles.label}>Inclement weather? (defaults to 'no') *</Text>
-                                    <TouchableOpacity style={styles.remindButton} onPress={handleWeatherLogChange('inclement_weather', !weather.inclement_weather)}>
+                                    <TouchableOpacity style={styles.remindButton} onPress={() => handleWeatherLogChange(index, 'inclement_weather', !weather.inclement_weather)}>
                                         {weather.inclement_weather
                                             ? `\u2611 Inclement Weather` // checked box
                                             : `\u2610 Inclement Weather` // unchecked box

@@ -66,14 +66,14 @@ export const saveEntry = async (plant, waterLog, weatherLog) => {
             `INSERT INTO journal (name, description, species, fertilizer, watering_time, date_planted, remind, image_uri)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?);`, 
             [
-                journal.name,
-                journal.description || '',
-                journal.species || '',
-                journal.fertilizer,
-                journal.watering_time,
-                journal.date_planted,
-                journal.remind || false, // default to false if not provided
-                journal.image_uri || ''
+                plant.name,
+                plant.description || '',
+                plant.species || '',
+                plant.fertilizer,
+                plant.watering_time,
+                plant.date_planted,
+                plant.remind || false, // default to false if not provided
+                plant.image_uri || ''
             ]
         );
         
@@ -249,4 +249,4 @@ export const deleteEntry = async (journal_id) => {
     }
 };
 
-export { db };
+export default db;
