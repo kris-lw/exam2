@@ -184,7 +184,7 @@ const handleUpdateEntry = async () => {
         >
             <ScrollView style={styles.scrollView}>
                 <View style={styles.formSection}>
-                    <Text style={styles.sectionTitle}>Plant Entry Information</Text>
+                    <Text style={styles.sectionTitle}>Plant Information</Text>
                     
                     <View style={styles.formField}>
                         <Text style={styles.label}>Plant Name *</Text>
@@ -198,15 +198,15 @@ const handleUpdateEntry = async () => {
                     
                     <View style={styles.formField}>
                         <Text style={styles.label}>Description</Text>
-                            <TextInput
-                                style={[styles.input, styles.textArea]}
-                                value={entry.description}
-                                onChangeText={(value) => handleEntryChange('description', value)}
-                                placeholder="Enter plant description (optional)"
-                                multiline
-                                numberOfLines={4}
-                                textAlignVertical="top"
-                            />
+                        <TextInput
+                            style={[styles.input, styles.textArea]}
+                            value={entry.description}
+                            onChangeText={(value) => handleEntryChange('description', value)}
+                            placeholder="Enter plant description (optional)"
+                            multiline
+                            numberOfLines={4}
+                            textAlignVertical="top"
+                        />
                     </View>
                     
                     <View style={styles.formField}>
@@ -225,7 +225,7 @@ const handleUpdateEntry = async () => {
                                 style={styles.input}
                                 value={entry.fertilizer}
                                 onChangeText={(value) => handleEntryChange('species', value)}
-                                placeholder="Enter plant species (e.g., Rose, Pothos, Aloe, Snake) (optional)"
+                                placeholder="Enter fertilizer used (e.g., Miracle-Gro, Osmocote)"
                             />
                     </View>
                     
@@ -288,7 +288,7 @@ const handleUpdateEntry = async () => {
                                 </View>
                                 
                                 <View style={styles.ingredientQuantity}>
-                                    <Text style={styles.label}>Date</Text>
+                                    <Text style={styles.label}>Date *</Text>
                                     <TextInput
                                         style={styles.input}
                                         value={watering.date}
@@ -298,89 +298,116 @@ const handleUpdateEntry = async () => {
                                 </View>
 
                                 <View style={styles.ingredientQuantity}>
-                                    <Text style={styles.label}>Time</Text>
+                                    <Text style={styles.label}>Time *</Text>
                                     <TextInput
                                         style={styles.input}
-                                        value={watering.date}
+                                        value={watering.time}
                                         onChangeText={(value) => handleWaterLogChange(index, 'date', value)}
                                         placeholder="Enter time watered (e.g., HR:SC AM/PM)"
                                     />
                                 </View>
 
                                 <View style={styles.formField}>
-                                    <Text style={styles.label}>Used fertilizer? (defaults to 'no')</Text>
-                                    <TouchableOpacity style={styles.remindButton} onPress={handleWaterLogChange('remind', !waterLog.fertilizer)}>
-                                        {waterLog.fertilizer
+                                    <Text style={styles.label}>Used fertilizer? (defaults to 'no') *</Text>
+                                    <TouchableOpacity style={styles.remindButton} onPress={handleWaterLogChange('fertilizer', !watering.fertilizer)}>
+                                        {watering.fertilizer
                                             ? `\u2611 Fertilizer` // checked box
                                             : `\u2610 Fertilizer` // unchecked box
                                         }
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                    {waterLog.length > 1 && (
-                        <TouchableOpacity
-                        style={styles.removeButton}
-                        onPress={() => removeWatering(index)}
-                        >
-                        <Text style={styles.removeButtonText}>Remove</Text>
-                        </TouchableOpacity>
-                    )}
-                    </View>
-                ))}
+                        {waterLog.length > 1 && (
+                            <TouchableOpacity
+                            style={styles.removeButton}
+                            onPress={() => removeWatering(index)}
+                            >
+                            <Text style={styles.removeButtonText}>Remove</Text>
+                            </TouchableOpacity>
+                        )}
+                        </View>
+                    ))}
                 
-                <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={addWatering}
-                >
-                    <Text style={styles.addButtonText}>+ Add Watering Entry</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={addWatering}
+                    >
+                        <Text style={styles.addButtonText}>+ Add Watering Entry</Text>
+                    </TouchableOpacity>
                 </View>
                 
                 <View style={styles.formSection}>
                     <Text style={styles.sectionTitle}>Weather Log</Text>
-                    {steps.map((weather, index) => (
+                    {weatherLog.map((weather, index) => (
                         <View key={index} style={styles.stepContainer}>
-                            <View style={styles.stepNumberContainer}>
-                                <Text style={styles.stepNumber}>{step.step_number}</Text>
+                            <View style={styles.stepInstructionContainer}>
+                                <View style={styles.ingredientQuantity}>
+                                    <Text style={styles.label}>Date *</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={weather.date}
+                                        onChangeText={(value) => handleWeatherLogChange(index, 'date', value)}
+                                        placeholder="Enter date recorded (e.g., MM/DD/YYYY)"
+                                    />
+                                </View>
+
+                                <View style={styles.ingredientQuantity}>
+                                    <Text style={styles.label}>Time *</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={weather.time}
+                                        onChangeText={(value) => handleWeatherLogChange(index, 'time', value)}
+                                        placeholder="Enter time recorded (e.g., HR:SC AM/PM)"
+                                    />
+                                </View>
+
+                                <View style={styles.ingredientQuantity}>
+                                    <Text style={styles.label}>Climate *</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={weather.climate}
+                                        onChangeText={(value) => handleWeatherLogChange(index, 'climate', value)}
+                                        placeholder="Enter climate (e.g., sunny, rainy, overcast)"
+                                    />
+                                </View>
+
+                                <View style={styles.formField}>
+                                    <Text style={styles.label}>Inclement weather? (defaults to 'no') *</Text>
+                                    <TouchableOpacity style={styles.remindButton} onPress={handleWeatherLogChange('inclement_weather', !weather.inclement_weather)}>
+                                        {weather.inclement_weather
+                                            ? `\u2611 Inclement Weather` // checked box
+                                            : `\u2610 Inclement Weather` // unchecked box
+                                        }
+                                    </TouchableOpacity>
+                                </View>
+                                {weatherLog.length > 1 && (
+                                <TouchableOpacity
+                                    style={styles.removeButton}
+                                    onPress={() => removeWeather(index)}
+                                >
+                                    <Text style={styles.removeButtonText}>Remove</Text>
+                                </TouchableOpacity>
+                                )}
                             </View>
-                        <View style={styles.stepInstructionContainer}>
-                            <TextInput
-                                style={[styles.input, styles.textArea]}
-                                value={step.instruction}
-                                onChangeText={(value) => handleStepChange(index, value)}
-                                placeholder="Enter instruction step"
-                                multiline
-                                numberOfLines={3}
-                                textAlignVertical="top"
-                            />
-                            {steps.length > 1 && (
-                            <TouchableOpacity
-                                style={styles.removeButton}
-                                onPress={() => removeStep(index)}
-                            >
-                                <Text style={styles.removeButtonText}>Remove</Text>
-                            </TouchableOpacity>
-                            )}
-                        </View>
                         </View>
                     ))}
                     
                     <TouchableOpacity
                         style={styles.addButton}
-                        onPress={addStep}
+                        onPress={addWeather}
                     >
-                        <Text style={styles.addButtonText}>+ Add Step</Text>
+                        <Text style={styles.addButtonText}>+ Add Weather Entry</Text>
                     </TouchableOpacity>
                 </View>
                 
                 <View style={styles.submitButtonContainer}>
                     <TouchableOpacity
                         style={styles.submitButton}
-                        onPress={handleUpdateRecipe}
+                        onPress={handleUpdateEntry}
                         disabled={loading}
                     >
                         <Text style={styles.submitButtonText}>
-                        {loading ? 'Updating...' : 'Update Recipe'}
+                        {loading ? 'Updating...' : 'Update Plant Entry'}
                         </Text>
                     </TouchableOpacity>
                 </View>

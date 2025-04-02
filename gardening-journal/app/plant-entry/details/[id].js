@@ -98,7 +98,7 @@ return (
                     {entry.species ? (
                     <View style={styles.metaItem}>
                         <Text style={styles.metaLabel}>Species:</Text>
-                        <Text style={styles.metaValue}>{recipe.cuisine_type}</Text>
+                        <Text style={styles.metaValue}>{entry.species}</Text>
                     </View>
                     ) : null}
                     

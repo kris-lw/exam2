@@ -17,7 +17,7 @@ export const initDatabase = async () => {
             watering_time INTEGER NOT NULL,
             date_planted TEXT NOT NULL,
             remind BOOLEAN NOT NULL,
-            image_uri TEXT,
+            image_uri TEXT
         );
         `);
         console.log('Journal table created successfully');
