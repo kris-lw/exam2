@@ -47,7 +47,7 @@ export const initDatabase = async () => {
             climate TEXT NOT NULL,
             inclement_weather BOOLEAN NOT NULL,
             conditions TEXT,
-            FOREIGN KEY (journal_id) REFERENCES waterLog (journal_id) ON DELETE CASCADE
+            FOREIGN KEY (journal_id) REFERENCES journal (journal_id) ON DELETE CASCADE
         );
         `);
         console.log('Weather Log table created successfully');
@@ -83,8 +83,8 @@ export const saveEntry = async (plant, waterLog, weatherLog) => {
         // insert waterLog
         for (const watering of waterLog) {
             await db.runAsync(
-                    `INSERT INTO ingredients (journal_id, water_amount, time, date, fertilizer, water_amount)
-                    VALUES (?, ?, ?, ?, ?, ?);`, 
+                    `INSERT INTO waterLog (journal_id, water_amount, time, date, fertilizer)
+                    VALUES (?, ?, ?, ?, ?);`, 
                 [
                     plantId,
                     watering.water_amount,
@@ -95,10 +95,12 @@ export const saveEntry = async (plant, waterLog, weatherLog) => {
             );
         }
         
+        console.log('Watering entry saved with ID:', plantId);
+
         // insert weatherLog
         for (const weather of weatherLog) {
             await db.runAsync(
-                `INSERT INTO steps (journal_id, time, date, climate, inclement_weather, conditions)
+                `INSERT INTO weatherLog (journal_id, time, date, climate, inclement_weather, conditions)
                 VALUES (?, ?, ?, ?, ?, ?);`, 
                 [
                     plantId,
@@ -111,6 +113,8 @@ export const saveEntry = async (plant, waterLog, weatherLog) => {
             );
         }
         
+        console.log('Weather entry saved with ID:', plantId);
+
         return plantId;
     }
     catch (error) {
@@ -142,7 +146,7 @@ export const getPlantById = async (journal_id) => {
     try {
         // Get the journal
         const journal = await db.getAllAsync(
-            'SELECT * FROM journal WHERE id = ?;',
+            'SELECT * FROM journal WHERE journal_id = ?;',
             [journal_id]
         );
         
@@ -185,20 +189,20 @@ export const updateEntry = async (plant, waterLog, weatherLog) => {
             SET name = ?, description = ?, species = ?, fertilizer = ?, watering_time = ?, date_planted = ?, remind = ?, image_uri = ? 
             WHERE journal_id = ?;`,
         [
-            journal.name,
-            journal.description || '',
-            journal.species || '',
-            journal.fertilizer,
-            journal.watering_time,
-            journal.date_planted,
-            journal.remind || false, // default to false if not provided
-            journal.image_uri || '',
+            plant.name,
+            plant.description || '',
+            plant.species || '',
+            plant.fertilizer,
+            plant.watering_time,
+            plant.date_planted,
+            plant.remind || false, // default to false if not provided
+            plant.image_uri || '',
         ]
         );
         
         // Delete existing ingredients and steps to replace with new ones
-        await db.runAsync('DELETE FROM waterLog WHERE journal_id = ?;', [journal.journal_id]);
-        await db.runAsync('DELETE FROM weatherLog WHERE journal_id = ?;', [journal.journal_id]);
+        await db.runAsync('DELETE FROM waterLog WHERE journal_id = ?;', [plant.journal_id]);
+        await db.runAsync('DELETE FROM weatherLog WHERE journal_id = ?;', [plant.journal_id]);
         
         // Insert new ingredients
         for (const watering of waterLog) {
@@ -206,7 +210,7 @@ export const updateEntry = async (plant, waterLog, weatherLog) => {
             `INSERT INTO waterLog (journal_id, water_amount, time, date, fertilizer) 
             VALUES (?, ?, ?, ?, ?);`,
             [
-            journal.journal_id,
+            plant.journal_id,
             watering.water_amount,
             watering.time,
             watering.date,
@@ -221,7 +225,7 @@ export const updateEntry = async (plant, waterLog, weatherLog) => {
             `INSERT INTO weatherLog (journal_id, time, date, climate, inclement_weather, conditions) 
             VALUES (?, ?, ?, ?, ?, ?);`,
             [
-                journal.journal_id,
+                plant.journal_id,
                 weather.time,
                 weather.date,
                 weather.climate,
@@ -240,7 +244,7 @@ export const updateEntry = async (plant, waterLog, weatherLog) => {
 export const deleteEntry = async (journal_id) => {
     try {
         await db.runAsync(
-            'DELETE FROM recipes WHERE id = ?;',
+            'DELETE FROM journal WHERE journal_id = ?;',
             [journal_id]);
     }
     catch (error) {

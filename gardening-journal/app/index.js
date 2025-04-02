@@ -44,7 +44,6 @@ export default function HomeScreen() {
           entry.name.toLowerCase().includes(text.toLowerCase()) ||
           entry.species.toLowerCase().includes(text.toLowerCase()) ||
           entry.fertilizer.toLowerCase().includes(text.toLowerCase()) ||
-          entry.watering_time.includes(parseInt(text, 10)) ||
           entry.date_planted.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredJournal(filtered);
@@ -73,8 +72,8 @@ export default function HomeScreen() {
           {item.fertilizer ? `${item.fertilizer} • ` : ''}
           {item.watering_time ? `${item.watering_time} mins` : 'No time specified'}
           {item.remind
-            ? `\u2611 Remind Me` // checked box
-            : `\u2610 Remind Me` // unchecked box
+            ? `\n\u2611 Remind Me` // checked box
+            : `\n\u2610 Remind Me` // unchecked box
           }
         </Text>
       </View>

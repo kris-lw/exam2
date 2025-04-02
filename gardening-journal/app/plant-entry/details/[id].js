@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { getPlantById, deleteEntry } from '../../database/db';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function PlantDetailScreen() {
 const { id } = useLocalSearchParams();
@@ -19,7 +20,7 @@ const loadEntry = async () => {
         setLoading(true);
         const entryData = await getPlantById(parseInt(id));
         if (entryData) {
-            setRecipe(entryData);
+            setEntry(entryData);
         }
         else {
             Alert.alert('Error', 'Plant entry not found');
@@ -88,7 +89,7 @@ return (
                 <Image source={{ uri: entry.image_uri }} style={styles.recipeImage} />
             ) : (
                 <View style={styles.noImageContainer}>
-                    <Text style={styles.noImageText}>No Image Provided</Text>
+                    <MaterialIcons name="local-florist" size={100} color="#888" />
                 </View>
             )}
 
@@ -101,13 +102,38 @@ return (
                         <Text style={styles.metaValue}>{entry.species}</Text>
                     </View>
                     ) : null}
-                    
+
+                    {entry.fertilizer ? (
+                    <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Fertilizer:</Text>
+                        <Text style={styles.metaValue}>{entry.fertilizer}</Text>
+                    </View>
+                    ) : null}
+
                     {entry.watering_time ? (
                     <View style={styles.metaItem}>
                         <Text style={styles.metaLabel}>Watering Time:</Text>
                         <Text style={styles.metaValue}>{entry.watering_time} mins</Text>
                     </View>
                     ) : null}
+
+                    {entry.date_planted ? (
+                    <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Date Planted:</Text>
+                        <Text style={styles.metaValue}>{entry.date_planted}</Text>
+                    </View>
+                    ) : null}
+
+                    {entry.remind ? (
+                    <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Set Reminder to Water?</Text>
+                        <Text style={styles.metaValue}>{`\u2611`}</Text>
+                    </View>
+                    ) : (
+                    <View style={styles.metaItem}>
+                        <Text style={styles.metaLabel}>Set Reminder to Water?</Text>
+                        <Text style={styles.metaValue}>{`\u2610`}</Text>
+                    </View>)}
                 </View>
             </View>
 
@@ -127,12 +153,13 @@ return (
                             <View key={index} style={styles.ingredientItem}>
                                 <Text style={styles.ingredientText}>
                                 {watering.date && watering.time
-                                    ? (`Plant Watered: ${watering.date} - ${watering.time}`
-                                        (watering.fertilizer 
-                                            ? ` - Fertilized? Y`
-                                            : ` - Fertilized? N`))
-                                    : 'No watering information available'}
-                                
+                                    ? <Text style={styles.ingredientText}>{watering.date} - {watering.time}</Text>
+                                    : <Text style={styles.ingredientText}>No watering information available</Text>
+                                }
+                                <Text style={styles.ingredientText}>{'\n'}Amount: {watering.water_amount} inches</Text>
+                                {watering.fertilizer 
+                                    ? <Text style={styles.ingredientText}>{'\n'}Fertilized? Y</Text>
+                                    : <Text style={styles.ingredientText}>{'\n'}Fertilized? N</Text>}
                                 </Text>
                             </View>
                         )))
@@ -149,14 +176,12 @@ return (
                             <View key={index} style={styles.stepItem}>
                                 <Text style={styles.stepText}>
                                     {weather.date && weather.time
-                                        ? `Weather Recorded: ${weather.date} - ${weather.time}`
+                                        ? `Weather Recorded (${weather.date} - ${weather.time})`
                                         : 'No weather information available'}
                                     {weather.inclement_weather 
-                                        ? `**Inclement Weather**`
-                                            (weather.conditions
-                                                ? `\nDescription: ${weather.conditions}`
-                                                : null)
-                                        : `No inclement weather reported`}
+                                        ? `\n**Inclement Weather**`
+                                        : `\nNo inclement weather reported`}
+                                    {weather.conditions && (`\nDescription: ${weather.conditions}`)}
                                 </Text>
                             </View>)))
                     :  (<Text style={styles.emptyListText}>No weather log added</Text>)
@@ -209,7 +234,7 @@ const styles = StyleSheet.create({
     },
     noImageContainer: {
         width: '100%',
-        height: 200,
+        height: 250,
         backgroundColor: '#e0e0e0',
         justifyContent: 'center',
         alignItems: 'center',
@@ -230,7 +255,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     recipeMetaContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         flexWrap: 'wrap',
     },
     metaItem: {

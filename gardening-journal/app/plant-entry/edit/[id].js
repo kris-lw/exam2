@@ -49,7 +49,7 @@ const loadEntry = async () => {
         if (entryData) {
             setEntry({
                 ...entryData,
-                watering_time: entryData.watering_time ? entryData.watering_time.toString() : '',
+                watering_time: entryData.watering_time ? entryData.watering_time.toString() : ''
             });
             
             if (entryData.waterLog && entryData.waterLog.length > 0) {
@@ -84,10 +84,10 @@ const handleWaterLogChange = (index, key, value) => {
     setWaterLog(updatedWaterLog);
 };
 
-const handleWeatherLogChange = (index, value) => {
+const handleWeatherLogChange = (index, key, value) => {
     const updatedWeatherLog = [...weatherLog];
-    updatedWeatherLog[index].weather = value;
-    setSteps(updatedWeatherLog);
+    updatedWeatherLog[index][key] = value;
+    setWeatherLog(updatedWeatherLog);
 };
 
 const addWatering = () => {
@@ -131,6 +131,23 @@ const handleUpdateEntry = async () => {
         return;
     }
 
+    if (!entry.fertilizer.trim()) {
+        Alert.alert('Error', 'Fertilizer is required');
+        return;
+    }
+
+    if (!entry.watering_time.trim()) {
+        Alert.alert('Error', 'Watering time is required');
+        return;
+    }
+
+    if (!entry.date_planted.trim()) {
+        Alert.alert('Error', 'Planting date is required');
+        return;
+    }
+
+    console.log('Entry validated');
+
     // Validate ingredients
     const validWaterLog = waterLog.filter(watering => watering.water_amount.trim());
     if (validWaterLog.length === 0) {
@@ -156,7 +173,7 @@ const handleUpdateEntry = async () => {
     
     await updateEntry(entryToUpdate, validWaterLog, validWeatherLog);
         Alert.alert('Success', 'Plant entry updated successfully', [
-            { text: 'OK', onPress: () => router.replace(`/plant-entry/${id}`) }
+            { text: 'OK', onPress: () => router.replace(`/plant-entry/details/${id}`) }
         ]);
     }
     catch (error) {
@@ -254,8 +271,8 @@ const handleUpdateEntry = async () => {
                         <Text style={styles.label}>Receive reminders for watering? (defaults to 'no')</Text>
                         <TouchableOpacity style={styles.remindButton} onPress={() => handleEntryChange('remind', !entry.remind)}>
                             {entry.remind
-                                ? `\u2611 Remind Me` // checked box
-                                : `\u2610 Remind Me` // unchecked box
+                                ? <Text>{'\u2611'} Remind Me</Text> // checked box
+                                : <Text>{'\u2610'} Remind Me</Text> // unchecked box
                             }
                         </TouchableOpacity>
                     </View>
@@ -275,18 +292,9 @@ const handleUpdateEntry = async () => {
                     <Text style={styles.sectionTitle}>Watering Log</Text>
                     {waterLog.map((watering, index) => (
                         <View key={index} style={styles.ingredientContainer}>
+                            
+
                             <View style={styles.formFieldRow}>
-                                <View style={styles.ingredientName}>
-                                    <Text style={styles.label}>Water Amount (inches) *</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        value={watering.water_amount}
-                                        onChangeText={(value) => handleWaterLogChange(index, 'water_amount', value)}
-                                        placeholder="Enter amount of water fed to plant (e.g., 2)"
-                                        keyboardType="numeric"
-                                    />
-                                </View>
-                                
                                 <View style={styles.ingredientQuantity}>
                                     <Text style={styles.label}>Date *</Text>
                                     <TextInput
@@ -306,23 +314,36 @@ const handleUpdateEntry = async () => {
                                         placeholder="Enter time watered (e.g., HR:SC AM/PM)"
                                     />
                                 </View>
+                            </View>
+
+                            <View style={styles.formFieldRow}>
+                                <View style={styles.ingredientName}>
+                                    <Text style={styles.label}>Water Amount (inches) *</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={watering.water_amount}
+                                        onChangeText={(value) => handleWaterLogChange(index, 'water_amount', value)}
+                                        placeholder="Enter amount of water fed to plant (e.g., 2)"
+                                        keyboardType="numeric"
+                                    />
+                                </View>
+                            </View>
 
                                 <View style={styles.formField}>
                                     <Text style={styles.label}>Used fertilizer? (defaults to 'no') *</Text>
                                     <TouchableOpacity style={styles.remindButton} onPress={() => handleWaterLogChange(index, 'fertilizer', !watering.fertilizer)}>
                                         {watering.fertilizer
-                                            ? `\u2611 Fertilizer` // checked box
-                                            : `\u2610 Fertilizer` // unchecked box
+                                            ? <Text>{'\u2611'} Fertilizer</Text> // checked box
+                                            : <Text>{'\u2610'} Fertilizer</Text> // unchecked box
                                         }
                                     </TouchableOpacity>
                                 </View>
-                            </View>
                         {waterLog.length > 1 && (
                             <TouchableOpacity
-                            style={styles.removeButton}
-                            onPress={() => removeWatering(index)}
+                                style={styles.removeButton}
+                                onPress={() => removeWatering(index)}
                             >
-                            <Text style={styles.removeButtonText}>Remove</Text>
+                                <Text style={styles.removeButtonText}>Remove</Text>
                             </TouchableOpacity>
                         )}
                         </View>
@@ -341,24 +362,26 @@ const handleUpdateEntry = async () => {
                     {weatherLog.map((weather, index) => (
                         <View key={index} style={styles.stepContainer}>
                             <View style={styles.stepInstructionContainer}>
-                                <View style={styles.ingredientQuantity}>
-                                    <Text style={styles.label}>Date *</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        value={weather.date}
-                                        onChangeText={(value) => handleWeatherLogChange(index, 'date', value)}
-                                        placeholder="Enter date recorded (e.g., MM/DD/YYYY)"
-                                    />
-                                </View>
+                                <View style={styles.formFieldRow}>
+                                    <View style={styles.ingredientQuantity}>
+                                        <Text style={styles.label}>Date *</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={weather.date}
+                                            onChangeText={(value) => handleWeatherLogChange(index, 'date', value)}
+                                            placeholder="Enter date recorded (e.g., MM/DD/YYYY)"
+                                        />
+                                    </View>
 
-                                <View style={styles.ingredientQuantity}>
-                                    <Text style={styles.label}>Time *</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        value={weather.time}
-                                        onChangeText={(value) => handleWeatherLogChange(index, 'time', value)}
-                                        placeholder="Enter time recorded (e.g., HR:SC AM/PM)"
-                                    />
+                                    <View style={styles.ingredientQuantity}>
+                                        <Text style={styles.label}>Time *</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={weather.time}
+                                            onChangeText={(value) => handleWeatherLogChange(index, 'time', value)}
+                                            placeholder="Enter time recorded (e.g., HR:SC AM/PM)"
+                                        />
+                                    </View>
                                 </View>
 
                                 <View style={styles.ingredientQuantity}>
@@ -375,11 +398,24 @@ const handleUpdateEntry = async () => {
                                     <Text style={styles.label}>Inclement weather? (defaults to 'no') *</Text>
                                     <TouchableOpacity style={styles.remindButton} onPress={() => handleWeatherLogChange(index, 'inclement_weather', !weather.inclement_weather)}>
                                         {weather.inclement_weather
-                                            ? `\u2611 Inclement Weather` // checked box
-                                            : `\u2610 Inclement Weather` // unchecked box
+                                            ? <Text>{'\u2611'} Inclement Weather</Text> // checked box
+                                            : <Text>{'\u2610'} Inclement Weather</Text> // unchecked box
                                         }
                                     </TouchableOpacity>
                                 </View>
+                                {weather.inclement_weather
+                                                                        ? (
+                                                                        <View style={styles.ingredientName}>
+                                                                            <Text style={styles.label}>Conditions</Text>
+                                                                            <TextInput
+                                                                                style={styles.input}
+                                                                                value={weather.conditions}
+                                                                                onChangeText={(value) => handleWeatherLogChange(index, 'conditions', value)}
+                                                                                placeholder="Enter inclement conditions (e.g., storm, hail) (optional)"
+                                                                            />
+                                                                        </View>
+                                                                    )
+                                                                    : weather.conditions = '' /* Reset conditions if inclement weather is not selected */}
                                 {weatherLog.length > 1 && (
                                 <TouchableOpacity
                                     style={styles.removeButton}
@@ -407,7 +443,7 @@ const handleUpdateEntry = async () => {
                         disabled={loading}
                     >
                         <Text style={styles.submitButtonText}>
-                        {loading ? 'Updating...' : 'Update Plant Entry'}
+                            {loading ? 'Updating...' : 'Update Plant Entry'}
                         </Text>
                     </TouchableOpacity>
                 </View>

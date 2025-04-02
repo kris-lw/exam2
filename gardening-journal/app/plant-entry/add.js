@@ -92,6 +92,7 @@ export default function AddPlantEntryScreen() {
     };
 
     const handleSaveEntry = async () => {
+        console.log('Saving entry...');
         // Validate form
         if (!entry.name.trim()) {
             Alert.alert('Error', 'Plant name is required');
@@ -113,20 +114,16 @@ export default function AddPlantEntryScreen() {
             return;
         }
 
+        console.log('Entry validated');
+
         // Validate ingredients
         const validWaterLog = waterLog.filter(watering => watering.water_amount.trim());
         if (validWaterLog.length === 0) {
             Alert.alert('Error', 'Add at least one watering log entry');
             return;
         }
-        else if (!watering.time.trim()) {
-            Alert.alert('Error', 'Time watered is required');
-            return;
-        }
-        else if (!watering.date.trim()) {
-            Alert.alert('Error', 'Date watered is required');
-            return;
-        }
+
+        console.log('Water Log validated');
 
         // Validate steps
         const validWeatherLog = weatherLog.filter(weather => weather.climate.trim());
@@ -134,24 +131,25 @@ export default function AddPlantEntryScreen() {
             Alert.alert('Error', 'Add at least one weather log entry');
             return;
         }
-        else if (!weather.time.trim()) {
-            Alert.alert('Error', 'Time for weather entry is required');
-            return;
-        }
-        else if (!watering.date.trim()) {
-            Alert.alert('Error', 'Date for weather entry is required');
-            return;
-        }
+
+        console.log('Weather Log validated');
 
         try {
             setLoading(true);
             
+            console.log('Entry:', entry);
+            console.log('WaterLog:', waterLog);
+            console.log('WeatherLog:', weatherLog);
             // Convert watering time to number if provided
             const entryToSave = {
                 ...entry,
                 watering_time: entry.watering_time ? parseInt(entry.watering_time, 10) : 0
             };
             
+            console.log('Entry to save:', entryToSave);
+            console.log('WaterLog to save:', validWaterLog);
+            console.log('WeatherLog to save:', validWeatherLog);
+
             await saveEntry(entryToSave, validWaterLog, validWeatherLog);
             Alert.alert('Success', 'Plant entry saved successfully', [
                 { text: 'OK', onPress: () => router.replace('/') }
@@ -289,6 +287,7 @@ export default function AddPlantEntryScreen() {
                                         />
                                     </View>
                                 </View>
+
                                 <View style={styles.formFieldRow}>
                                     <View style={styles.ingredientName}>
                                         <Text style={styles.label}>Water Amount (inches) *</Text>
@@ -300,19 +299,16 @@ export default function AddPlantEntryScreen() {
                                             keyboardType="numeric"
                                         />
                                     </View>
-                                    
-                                <View style={styles.formFieldRow}>
-                                    <View style={styles.formField}>
-                                        <Text style={styles.label}>Used fertilizer? (defaults to 'no') *</Text>
-                                        <TouchableOpacity style={styles.remindButton} onPress={() => handleWateringChange(index, 'fertilizer', !watering.fertilizer)}>
-                                            {watering.fertilizer
-                                                ? <Text>{'\u2611'} Fertilizer</Text> // checked box
-                                                : <Text>{'\u2610'} Fertilizer</Text> // unchecked box
-                                            }
-                                        </TouchableOpacity>
-                                    </View>
                                 </View>
                                     
+                                <View style={styles.formField}>
+                                    <Text style={styles.label}>Used fertilizer? (defaults to 'no') *</Text>
+                                    <TouchableOpacity style={styles.remindButton} onPress={() => handleWateringChange(index, 'fertilizer', !watering.fertilizer)}>
+                                        {watering.fertilizer
+                                            ? <Text>{'\u2611'} Fertilizer</Text> // checked box
+                                            : <Text>{'\u2610'} Fertilizer</Text> // unchecked box
+                                        }
+                                    </TouchableOpacity>
                                 </View>
                             {waterLog.length > 1 && (
                                 <TouchableOpacity
@@ -338,24 +334,26 @@ export default function AddPlantEntryScreen() {
                         {weatherLog.map((weather, index) => (
                             <View key={index} style={styles.stepContainer}>
                                 <View style={styles.stepInstructionContainer}>
-                                    <View style={styles.ingredientQuantity}>
-                                        <Text style={styles.label}>Date *</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            value={weather.date}
-                                            onChangeText={(value) => handleWeatherChange(index, 'date', value)}
-                                            placeholder="Enter date recorded (e.g., MM/DD/YYYY)"
-                                        />
-                                    </View>
-    
-                                    <View style={styles.ingredientQuantity}>
-                                        <Text style={styles.label}>Time *</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            value={weather.time}
-                                            onChangeText={(value) => handleWeatherChange(index, 'time', value)}
-                                            placeholder="Enter time recorded (e.g., HR:SC AM/PM)"
-                                        />
+                                    <View style={styles.formFieldRow}>
+                                        <View style={styles.ingredientQuantity}>
+                                            <Text style={styles.label}>Date *</Text>
+                                            <TextInput
+                                                style={styles.input}
+                                                value={weather.date}
+                                                onChangeText={(value) => handleWeatherChange(index, 'date', value)}
+                                                placeholder="Enter date recorded (e.g., MM/DD/YYYY)"
+                                            />
+                                        </View>
+        
+                                        <View style={styles.ingredientQuantity}>
+                                            <Text style={styles.label}>Time *</Text>
+                                            <TextInput
+                                                style={styles.input}
+                                                value={weather.time}
+                                                onChangeText={(value) => handleWeatherChange(index, 'time', value)}
+                                                placeholder="Enter time recorded (e.g., HR:SC AM/PM)"
+                                            />
+                                        </View>
                                     </View>
     
                                     <View style={styles.ingredientQuantity}>
